@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Main page</title>
+		<script src="https://unpkg.com/vue@3"></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<style>
+			div {text-align: center; font-family: arial;}
+		</style>
+
+	</head>
+	<body>
+		<br>
+		{% verbatim %}
+		<div id="app">
+			<div v-if="authorized">
+				<p>Hello, {{ input.username }}
+				<button type="button" @click="logout()">Log out</button>
+				</p>
+			</div>
+			<form v-else @keyup.enter="login()">
+				<label>Username:</label>
+				<input type="text" v-model="input.username">
+				<label>Password:</label>
+				<input type="password" v-model="input.password">
+				<button type="button" @click="login()">Enter</button>
+			</form>
+		</div>
+
+		<div id="main">
+			<div v-if="authorized">
+				<h1>You're in</h1>
+				<a href="/profile/">Go to profile</a>
+			</div>
+			<div v-else>
+				<h1>You need to authorize first</h1>
+			</div>
+		</div>
+		{% endverbatim %}
+
+		<script>
+		const app = Vue.createApp({
+			data() {
+				return {
+					authorized: false,
+					input: {
+					username: '',
+					password: ''
+					}
+				}
+			},
+			methods: {
+				login() {
+					axios
+						.post('/auth/', {
+							username: this.input.username,
+							password: this.input.password
+						})
+						.then((response) => {
+							if ('Success' in response.data) {
+								this.authorized = true,
+								main.authorized = true
+							}
+							else {alert('Invalid login or password')}
+                
+						})
+						.catch((error) => {
+							alert('Ошибка на сервере')
+						})
+				},
+				
+				logout() {
+					axios
+						.post('/logout/', {})
+						.then((response) => {
+							this.authorized = false,
+							main.authorized = false,
+							alert(response.data.Success)
+						})
+						.catch((error) => {
+							console.log(error)
+						})
+				}
+			}
+		}).mount('#app')
+
+		const main = Vue.createApp({
+			data() {
+				return {
+					authorized: false
+				}
+			}
+		}).mount('#main')
+		</script>
+	</body>
+</html>
+
