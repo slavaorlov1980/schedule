@@ -28,6 +28,9 @@ class Interval(models.Model):
         verbose_name_plural = 'Интервалы'
         ordering = ['start_date']
 
+    def __str__(self):
+        return f'{self.start_date}, {self.end_date}'
+
 class Event(models.Model):
 
     event_date = models.OneToOneField(Interval, on_delete=models.CASCADE, primary_key=True, verbose_name='Дата занятия')

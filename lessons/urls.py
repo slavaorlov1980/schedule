@@ -8,5 +8,6 @@ urlpatterns = [
         path('user_register/<username>,<email>,<password>/', views.user_register),
         path('logout/', views.user_logout),
         path('add_interval/<start_date>, <end_date>', views.add_interval),
-        path('auth/', views.auth)
+        path('auth/', views.auth),
+        path('intervals/', views.intervals)
 ]

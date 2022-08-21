@@ -41,6 +41,14 @@ def user_logout(request):
     logout(request)
     return JsonResponse({'Success' : 'You\'re logged out'}) 
 
+def intervals(request):
+    response_data = []
+    intervals_data = Interval.objects.all()
+    date = '21.08.2022'
+    time = '14:00 - 15:00'
+    response_data = {'date': date, 'time': time}
+    return JsonResponse(response_data)
+
 def add_interval(request, start_date, end_date):
 #    interval = Interval.objects.create(start_date=start_date, end_date=end_date)
     pass

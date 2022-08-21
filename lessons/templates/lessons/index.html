@@ -27,12 +27,24 @@
 				<button type="button" @click="login()">Enter</button>
 			</form>
 		</div>
-
 		<div id="main">
 			<div v-if="authorized">
+				<div v-for='interval in intervals'>
+					<table>
+						<tr>
+							<td style="background:lightgray">{{interval}}</td>
+						</tr>
+					</table>	
+				</div>
+
 				<h1>You're in</h1>
 				<a href="/profile/">Go to profile</a>
+				<form>
+				<input type="datetime-local" value="2022-08-21T08:00" min="2022-08-21T08:00" max="2022-08-21T17:00">
+				<input type="submit">
+				</form>
 			</div>
+
 			<div v-else>
 				<h1>You need to authorize first</h1>
 			</div>
@@ -88,9 +100,23 @@
 		const main = Vue.createApp({
 			data() {
 				return {
-					authorized: false
+					authorized: false,
+					intervals: ['22.08.2022 14:00 - 22.08.2022 15:00',
+								'22.08.2022 15:00 - 22.08.2022 16:00',
+								'22.08.2022 16:00 - 22.08.2022 17:00',
+								'22.08.2022 17:00 - 22.08.2022 18:00'
+]
 				}
-			}
+			},
+//			computed: {
+//				axios
+//					.get('/intervals/', {})
+//					.then((response) => {
+//						this.intervals = response.data,
+//						alert('this works')
+//					})
+//					.catch((error) => {console.log(error)})
+//			}
 		}).mount('#main')
 		</script>
 	</body>
