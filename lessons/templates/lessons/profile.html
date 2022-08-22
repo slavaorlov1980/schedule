@@ -6,8 +6,43 @@
 		<script src="https://unpkg.com/vue@3"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	</head>
-	<body>
-		Hello from profile
-		
+	<body style="font-family: arial">
+		<h3 align="center">Available time for { student }</h3>
+		{% verbatim %}
+		<div id="profile" align="center">
+			<table border=1>
+				<tr>
+					<td></td>
+					<td v-for="column in columns" width="40px" align="center">{{ column }}</td>
+				</tr>
+				<tr v-for="row in rows">
+					<td height="40px">{{ row }}</td>
+					<td v-for="column in columns" @click="check" :key="`${row} ${column}`" style="backgroundColor: green"></td>
+				</tr>
+			</table>
+		</div>
+		{% endverbatim %}
+		<script>
+			const profile = Vue.createApp({
+				data() {
+					return {
+						rows: ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
+						columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+					}
+				},
+				methods: {
+					check(event) {
+						let checked = false;
+						let tdKey = event.target.__vnode.key;
+						let tdStyle = event.target.style;
+
+						if (tdStyle.backgroundColor == 'green') {
+							tdStyle.backgroundColor = 'red',
+							}
+						else {tdStyle.backgroundColor = 'green'};
+					}
+				}
+			}).mount('#profile')
+		</script>
 	</body>
 </html>
