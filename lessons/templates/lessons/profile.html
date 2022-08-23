@@ -17,7 +17,7 @@
 				</tr>
 				<tr v-for="row in rows">
 					<td height="40px">{{ row }}</td>
-					<td v-for="column in columns" @click="check" :key="`${row} ${column}`" style="backgroundColor: green"></td>
+					<td v-for="column in columns" @click="check" :key="`${row} ${column}`" style="backgroundColor: red"></td>
 				</tr>
 			</table>
 		</div>
@@ -32,14 +32,26 @@
 				},
 				methods: {
 					check(event) {
-						let checked = false;
 						let tdKey = event.target.__vnode.key;
 						let tdStyle = event.target.style;
+						if (tdStyle.backgroundColor === 'red') {
+							tdStyle.backgroundColor = 'green',
+							console.log(event.target.parentNode);
+							//console.log(event.target.parentNode.textContent),
+							//axios
+							//	.post('/add_interval/', {tdKey})
+							//	.then((response) => {console.log(response.data)})
+							//	.catch((error) => {alert(error)});
+						}
+						else {
+							tdStyle.backgroundColor = 'red'//,
+							//axios
+							//	.post('/remove_interval/', {tdKey})
+							//	.then((response) => {console.log(response.data)})
+							//	.catch((error) => {alert(error)});
 
-						if (tdStyle.backgroundColor == 'green') {
-							tdStyle.backgroundColor = 'red'
-							}
-						else {tdStyle.backgroundColor = 'green'};
+						};
+						//console.log(tdKey.split(' ')[0] + '\n' + tdKey.split(' ')[1]);
 					}
 				}
 			}).mount('#profile')
