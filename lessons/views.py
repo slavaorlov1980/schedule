@@ -20,31 +20,41 @@ def user_register(request, username, email, password):
         user = User.objects.create_user(username, email, password)
         user.save()
         response_data['result'] = f'User \'{username}\' succesfully registered'
-        
+
 
     return JsonResponse(response_data)
-    
+
 def auth(request):
     request_data = json.loads(request.body)
-    username = request_data["username"]
+    username = request_data["loginName"]
     password = request_data["password"]
 
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return JsonResponse({"Success" : "Вы авторизованы"})
+        return JsonResponse({"Success": "Вы авторизованы", "username": user.username})
     else:
-        return JsonResponse({"Error" : "Данные некорректны"})
+        return JsonResponse({"Error": "Данные некорректны"})
 
+def check_auth(request):
+    result = request.user.is_authenticated
+    username = ''
+    first_name = ''
+    if result:
+        username = request.user.username
+        first_name = request.user.first_name
+    return JsonResponse({'result': result, 'username': username, 'first_name': first_name})
 
 def user_logout(request):
     logout(request)
-    return JsonResponse({'Success' : 'You\'re logged out'}) 
+    return JsonResponse({'Success': 'You\'re logged out'}) 
 
 
-def add_interval(request):
-    
+def submit_interval(request):
+
 #    interval = Interval.objects.create(start_date=start_date, end_date=end_date)
-    request_data = json.loads(request.body)['tdKey']
-
-    return JsonResponse({'tdKey = ': request_data})
+    request_data = json.loads(request.body)
+    data = request_data['schedule']
+    print(f'{data = }')
+    response_data = {'data': data}
+    return JsonResponse(response_data)

@@ -7,64 +7,78 @@
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	</head>
 	<body style="font-family: arial">
-		<h3 align="center">Available time for { student }</h3>
+
 		{% verbatim %}
 		<div id="profile" align="center">
+			<h3 align="center">Available time for {{ firstName }}</h3>
+			<a href="#" @click="logout()">Logout</a>
 			<table border=1>
 				<tr>
 					<td></td>
-					<td v-for="column in columns" width="40px" align="center">{{ column }}</td>
+					<td width="100px" v-for="column in columns" align="center">{{ column }}</td>
 				</tr>
 				<tr v-for="row in rows">
-					<td height="40px">{{ row }}</td>
-					<td v-for="column in columns" @click="check" :key="`${row} ${column}`" style="backgroundColor: red"></td>
+					<td height="20px">{{ row }}</td>
+					<td v-for="column in columns" @click="check" :key="`${row} ${column}`" style="backgroundColor: rgb(255,100,100)"></td>
 				</tr>
 			</table>
-			<input type="submit" @click="submit">
+			<br>
+			<input type="button" value="Save schedule" style="font-size: 20pt" @click="submit">
 		</div>
 		{% endverbatim %}
+
 		<script>
 			const profile = Vue.createApp({
 				data() {
 					return {
-						rows: ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
-						columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-						scheduleObj: new Set()
+						rows: ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'],
+						columns: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
+						scheduleObj: new Set(),
+						firstName: ''
 					}
+				},
+				created () {
+					axios
+						.get('/check_auth/')
+						.then((response) => {
+							this.firstName = response.data['first_name']
+						})
+						.catch((error) => console.log(error))
 				},
 				methods: {
 					check(event) {
-						//let tdKey = event.target.__vnode.key;
 						let tdStyle = event.target.style;
 						let row = event.target.parentNode.rowIndex - 1;
 						let cell = event.target.cellIndex - 1;
 						let position = (this.rows[row] + ', ' + this.columns[cell]);
-						if (tdStyle.backgroundColor === 'red') {
-							tdStyle.backgroundColor = 'green',
-							this.scheduleObj.add(position),
-							console.log(position),
-							console.log(this.scheduleObj)
-							//console.log(event.target.parentNode);
-							//console.log(event.target.parentNode.textContent),
-							//axios
-							//	.post('/add_interval/', {tdKey})
-							//	.then((response) => {console.log(response.data)})
-							//	.catch((error) => {alert(error)});
+						if (tdStyle.backgroundColor === 'rgb(255, 100, 100)') {
+							tdStyle.backgroundColor = 'rgb(100, 255, 100)',
+							this.scheduleObj.add(position)
 						}
 						else {
-							tdStyle.backgroundColor = 'red',
-							this.scheduleObj.delete(position),
-							console.log(this.scheduleObj)//,
-							//axios
-							//	.post('/remove_interval/', {tdKey})
-							//	.then((response) => {console.log(response.data)})
-							//	.catch((error) => {alert(error)});
-
+							tdStyle.backgroundColor = 'rgb(255,100,100)',
+							this.scheduleObj.delete(position)
 						};
-						//console.log(tdKey.split(' ')[0] + '\n' + tdKey.split(' ')[1]);
+						
+					},
+					logout() {
+						axios
+							.post('/logout/')
+							.then((response) => {
+								alert(response.data.Success)
+								window.location.href = '/'
+							})
+							.catch((error) => {
+								console.log(error)
+							})
 					},
 					submit() {
-						alert('schedule saved');
+						let scheduleArray = Array.from(this.scheduleObj);
+						axios
+							.post('/submit_interval/', {schedule: scheduleArray})
+							.then((response) => {console.log(response.data)})
+							.catch((error) => {alert(error)});
+						alert('Schedule saved');
 					}
 				}
 			}).mount('#profile')

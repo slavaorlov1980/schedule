@@ -5,119 +5,95 @@
 		<title>Main page</title>
 		<script src="https://unpkg.com/vue@3"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 		<style>
-			div {text-align: center; font-family: arial;}
+			div {
+				text-align: center;
+				font-family: arial;
+			}
 		</style>
 
 	</head>
+
 	<body>
-		<br>
 		{% verbatim %}
-		<div id="app">
-			<div v-if="authorized">
-				<p>Hello, {{ input.username }}
-				<button type="button" @click="logout()">Log out</button>
-				</p>
+		<div id="app">	
+			<div v-if="authenticated">
+				Hello, {{ firstName }}<br>
+				<a href="/profile/" style="padding-right:10px">Profile</a>
+				<a href="#" @click="logout()">Logout</a>
 			</div>
-			<form v-else @keyup.enter="login()">
-				<label>Username:</label>
-				<input type="text" v-model="input.username">
-				<label>Password:</label>
-				<input type="password" v-model="input.password">
-				<button type="button" @click="login()">Enter</button>
-			</form>
-		</div>
-		<div id="main">
-			<div v-if="authorized">
-				<div v-for='interval in intervals'>
-					<table>
-						<tr>
-							<td style="background:lightgray">{{interval}}</td>
-						</tr>
-					</table>	
-				</div>
-
-				<h1>You're in</h1>
-				<a href="/profile/">Go to profile</a>
-				<form>
-				<input type="datetime-local" value="2022-08-21T08:00" min="2022-08-21T08:00" max="2022-08-21T17:00">
-				<input type="submit">
-				</form>
-			</div>
-
 			<div v-else>
-				<h1>You need to authorize first</h1>
+				<a href="#" @click="loginForm()">Login</a>
+			</div>
+
+			<div style="display:none" ref="loginForm">
+				<form @keyup.enter="login()">
+					<label>Username:</label>
+					<input type="text" v-model="loginName">
+					<label>Password:</label>
+					<input type="password" v-model="password">
+					<button type="button" @click="login()">Enter</button>
+				</form>
 			</div>
 		</div>
 		{% endverbatim %}
 
 		<script>
+
 		const app = Vue.createApp({
 			data() {
 				return {
-					authorized: false,
-					input: {
-					username: '',
-					password: ''
-					}
+					loginName: '',
+					password: '',
+					firstName: '',
+					authenticated: false
 				}
+			},
+			created () {
+				axios
+					.get('/check_auth/')
+					.then((response) => {
+						this.authenticated = response.data['result'],
+						this.firstName = response.data['first_name']
+					})
+					.catch((error) => {console.log(error)})
 			},
 			methods: {
 				login() {
 					axios
 						.post('/auth/', {
-							username: this.input.username,
-							password: this.input.password
+							loginName: this.loginName,
+							password: this.password
 						})
 						.then((response) => {
 							if ('Success' in response.data) {
-								this.authorized = true,
-								main.authorized = true
+								window.location.href = '/profile/';
 							}
 							else {alert('Invalid login or password')}
-                
 						})
 						.catch((error) => {
-							alert('Ошибка на сервере')
+							console.log(error);
 						})
 				},
 				
 				logout() {
 					axios
-						.post('/logout/', {})
+						.post('/logout/')
 						.then((response) => {
-							this.authorized = false,
-							main.authorized = false,
-							alert(response.data.Success)
+							alert(response.data.Success),
+							window.location.href = "/"
 						})
 						.catch((error) => {
 							console.log(error)
 						})
+				},
+				loginForm() {
+					this.$refs.loginForm.style.display = "block"
 				}
 			}
 		}).mount('#app')
 
-		const main = Vue.createApp({
-			data() {
-				return {
-					authorized: false,
-					intervals: ['22.08.2022 14:00 - 22.08.2022 15:00',
-								'22.08.2022 15:00 - 22.08.2022 16:00',
-								'22.08.2022 16:00 - 22.08.2022 17:00',
-								'22.08.2022 17:00 - 22.08.2022 18:00'
-]
-				}
-			},
-//			computed: {
-//				axios
-//					.get('/intervals/', {})
-//					.then((response) => {
-//						this.intervals = response.data,
-//						alert('this works')
-//					})
-//					.catch((error) => {console.log(error)})
-//			}
-		}).mount('#main')
 		</script>
 	</body>
 </html>

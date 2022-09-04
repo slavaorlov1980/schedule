@@ -7,7 +7,7 @@ urlpatterns = [
         path('profile/', views.profile),
         path('user_register/<username>,<email>,<password>/', views.user_register),
         path('logout/', views.user_logout),
-        path('add_interval/<start_date>, <end_date>', views.add_interval),
         path('auth/', views.auth),
-        path('add_interval/', views.add_interval)
+        path('submit_interval/', views.submit_interval),
+        path('check_auth/', views.check_auth)
 ]
