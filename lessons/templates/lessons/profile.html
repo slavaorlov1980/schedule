@@ -10,16 +10,18 @@
 
 		{% verbatim %}
 		<div id="profile" align="center">
-			<h3 align="center">Available time for {{ firstName }}</h3>
-			<a href="#" @click="logout()">Logout</a>
-			<table border=1>
+			<h3 align="center">
+				Available time for {{ firstName }}
+				<a href="#" @click="logout()" style="padding-left:10px">Logout</a>
+			</h3>
+			<table style="border-style:solid;border-radius:10px">
 				<tr>
 					<td></td>
-					<td width="100px" v-for="column in columns" align="center">{{ column }}</td>
+					<td v-for="column in columns" style="width:100px;text-align:center;border:solid;border-radius:5px;border-width:1px">{{ column }}</td>
 				</tr>
 				<tr v-for="row in rows">
-					<td height="20px">{{ row }}</td>
-					<td v-for="column in columns" @click="check" :key="`${row} ${column}`" style="backgroundColor: rgb(255,100,100)"></td>
+					<td style="height:20px;border:solid;border-radius:5px;border-width:1px">{{ row }}</td>
+					<td v-for="column in columns" @click="check" style="backgroundColor:rgb(255,100,100);"></td>
 				</tr>
 			</table>
 			<br>
@@ -32,7 +34,7 @@
 				data() {
 					return {
 						rows: ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'],
-						columns: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
+						columns: ['12.09', '13.09', '14.09', '15.09', '16.09', '17.09', '18.09'],
 						scheduleObj: new Set(),
 						firstName: ''
 					}
@@ -76,9 +78,11 @@
 						let scheduleArray = Array.from(this.scheduleObj);
 						axios
 							.post('/submit_interval/', {schedule: scheduleArray})
-							.then((response) => {console.log(response.data)})
+							.then((response) => {
+								console.log(response.data),
+								alert('Schedule saved')
+							})
 							.catch((error) => {alert(error)});
-						alert('Schedule saved');
 					}
 				}
 			}).mount('#profile')

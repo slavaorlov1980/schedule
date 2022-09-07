@@ -55,6 +55,5 @@ def submit_interval(request):
 #    interval = Interval.objects.create(start_date=start_date, end_date=end_date)
     request_data = json.loads(request.body)
     data = request_data['schedule']
-    print(f'{data = }')
     response_data = {'data': data}
     return JsonResponse(response_data)
